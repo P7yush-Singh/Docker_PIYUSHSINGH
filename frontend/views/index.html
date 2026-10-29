@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Form | Docker Assignment</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      font-family: Arial, sans-serif;
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    .form-container {
+      width: 100%;
+      max-width: 540px;
+      padding: 32px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      margin-bottom: 24px;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .required {
+      color: #dc2626;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font: inherit;
+      background: #ffffff;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: 2px solid #bfdbfe;
+      border-color: #2563eb;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    @media (max-width: 480px) {
+      .form-container {
+        padding: 22px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="form-container">
+    <h1>Contact Us</h1>
+
+    <p class="subtitle">
+      Please fill out the form below to submit your details.
+    </p>
+
+    
+<form id="contactForm">
+  <div class="form-group">
+    <label for="fullName">
+      Full Name <span class="required">*</span>
+    </label>
+    <input
+      type="text"
+      id="fullName"
+      name="fullName"
+      placeholder="Enter your full name"
+      required
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="email">
+      Email Address <span class="required">*</span>
+    </label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      placeholder="Enter your email address"
+      required
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="phone">Phone Number (Optional)</label>
+    <input
+      type="tel"
+      id="phone"
+      name="phone"
+      placeholder="Enter your phone number"
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="message">
+      Message <span class="required">*</span>
+    </label>
+    <textarea
+      id="message"
+      name="message"
+      placeholder="Write your message here"
+      required
+    ></textarea>
+  </div>
+
+  <p id="formStatus" role="status" aria-live="polite"></p>
+  <button type="submit">Submit Details</button>
+</form>
+
+<script>
+  const form = document.getElementById("contactForm");
+  const status = document.getElementById("formStatus");
+  const submitButton = form.querySelector('button[type="submit"]');
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    status.textContent = "Submitting your details...";
+    submitButton.disabled = true;
+
+    const formData = Object.fromEntries(new FormData(form).entries());
+
+    try {
+      const response = await fetch("/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Submission failed.");
+      }
+
+      status.textContent = result.message || "Data submitted successfully.";
+      form.reset();
+    } catch (error) {
+      status.textContent =
+        error.message || "Unable to submit the form. Please try again.";
+    } finally {
+      submitButton.disabled = false;
+    }
+  });
+</script>
+
+  </main>
+</body>
+</html>
